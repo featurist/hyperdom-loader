@@ -146,7 +146,33 @@ describe('loader', function () {
       }).then(function () {
         expect(l('value 2', 300)).to.be.undefined;
         return promises[1].then(function () {
-          expect(l('value 2')).to.equal('value 2');
+          expect(l('value 2', 300)).to.equal('value 2');
+        });
+      });
+    });
+
+    it('returns undefined immediately if timeout is 0', function () {
+      var promises = [];
+
+      function fn(value, n) {
+        var promise = eventualValue(value, n);
+        promises.push(promise);
+        return promise;
+      }
+
+      var l = loader(fn, {timeout: 0});
+
+      l('value 1', 20);
+
+      return promises[0].then(function () {
+        expect(l('value 1', 20)).to.equal('value 1');
+        expect(l('value 2', 300)).to.be.undefined;
+      }).then(function () {
+        return wait(200);
+      }).then(function () {
+        expect(l('value 2', 300)).to.be.undefined;
+        return promises[1].then(function () {
+          expect(l('value 2', 300)).to.equal('value 2');
         });
       });
     });
@@ -163,9 +189,12 @@ describe('loader', function () {
       var l = loader(fn, {timeout: 140});
 
       l('value 1', 20);
+      l('value 2', 20);
+      l('value 3', 20);
+      l('value 4', 20);
 
       return wait(300).then(function () {
-        expect(l('value 1', 20)).to.equal('value 1');
+        expect(l('value 4', 20)).to.equal('value 4');
       });
     });
 

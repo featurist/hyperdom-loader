@@ -6,7 +6,7 @@ module.exports = function(fn, options) {
   var callId = 0;
   var previousPromise;
   var resetTimeout;
-  var timeout = (options && options.timeout) || 140;
+  var timeout = options && options.hasOwnProperty('timeout')? options.timeout: 140;
   var onfulfilled = options && options.onfulfilled;
 
   function setPlastiqRefresh() {
@@ -30,17 +30,28 @@ module.exports = function(fn, options) {
               onfulfilled(value);
             }
           }
-          clearTimeout(resetTimeout);
+          if (resetTimeout) {
+            clearTimeout(resetTimeout);
+          }
         }, function (error) {
           if (thisCallId == callId) {
             storedException = error;
           }
-          clearTimeout(resetTimeout);
+          if (resetTimeout) {
+            clearTimeout(resetTimeout);
+          }
         });
 
-        resetTimeout = setTimeout(function () {
+        if (timeout) {
+          if (resetTimeout) {
+            clearTimeout(resetTimeout);
+          }
+          resetTimeout = setTimeout(function () {
+            storedValue = undefined;
+          }, timeout);
+        } else {
           storedValue = undefined;
-        }, 140);
+        }
 
         if (previousPromise && typeof previousPromise.abort === 'function') {
           previousPromise.abort();
