@@ -1,0 +1,31 @@
+{
+  "name": "plastiq-loader",
+  "version": "1.0.0",
+  "description": "resource loader for plastiq",
+  "main": "index.js",
+  "directories": {
+    "test": "test"
+  },
+  "dependencies": {
+    "chai": "3.0.0"
+  },
+  "devDependencies": {
+    "mocha": "2.2.5"
+  },
+  "scripts": {
+    "test": "mocha"
+  },
+  "keywords": [
+    "plastiq"
+  ],
+  "author": "Tim Macfarlane <timmacfarlane@gmail.com>",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/featurist/plastiq-loader.git"
+  },
+  "bugs": {
+    "url": "https://github.com/featurist/plastiq-loader/issues"
+  },
+  "homepage": "https://github.com/featurist/plastiq-loader"
+}
