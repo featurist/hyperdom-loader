@@ -49,11 +49,13 @@ var loader = require('plastiq-loader');
 var $ = require('jquery');
 var router = require('plastiq-router');
 
+router.start();
+
 var postRoute = router.route('/post/:id');
 var rootRoute = router.route('/');
 
 var loadPost = loader(function (id) {
-  return $.get('/api/post/' + encodeURIComponent(query));
+  return $.get('/api/post/' + encodeURIComponent(id));
 }, {timeout: 0});
 
 function render(model) {
@@ -66,7 +68,7 @@ function render(model) {
       
       if (post) {
         return h('.post',
-          h('h1', post.title)
+          h('h1', post.title),
           h('article', post.body)
         );
       } else {
