@@ -13,7 +13,7 @@ var loader = require('plastiq-loader');
 var $ = require('jquery');
 
 var searchResults = loader(function (query) {
-  if (query)
+  if (query) {
     return $.get('/search?q=' + encodeURIComponent(query));
   }
 });
@@ -22,7 +22,7 @@ function render(model) {
   var results = searchResults(model.query);
 
   return h('div',
-    h('label', 'Search', h('input', {type: 'text', binding: [model, 'query']}))
+    h('label', 'Search', h('input', {type: 'text', binding: [model, 'query']})),
     results && model.query
       ? h('ol',
           results.map(function (result) {
