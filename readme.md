@@ -38,6 +38,47 @@ plastiq.append(document.body, render, {});
 
 The first time `searchResults` is called, it will start loading the results and return `undefined`. As soon as results come in plastiq will refresh and `searchResults` will be called again, this time returning the results. As the search query changes, the new results will arrive and the page will be refreshed.
 
+# routes
+
+Another example is when you have client-side routes. Let's say, for example, that you have a blog engine and each blog entry is on its own route, naturally. Each time you get to a new blog URL, you want to load the corresponding blog entry. With `plastiq-loader` you can load the blog entry in the render function, and it will do the magic of only loading a new blog entry when the URL changes. In this case you may want to use `{timeout: 0}` to ensure that when the URL changes, you get a "loading" page instead of the previous page.
+
+```js
+var plastiq = require('plastiq');
+var h = plastiq.html;
+var loader = require('plastiq-loader');
+var $ = require('jquery');
+var router = require('plastiq-router');
+
+var postRoute = router.route('/post/:id');
+var rootRoute = router.route('/');
+
+var loadPost = loader(function (id) {
+  return $.get('/api/post/' + encodeURIComponent(query));
+}, {timeout: 0});
+
+function render(model) {
+  return h('div',
+    rootRoute(function () {
+      return h('h1', 'welcome to my blog!');
+    }),
+    postRoute(function (params) {
+      var post = loadPost(params.id);
+      
+      if (post) {
+        return h('.post',
+          h('h1', post.title)
+          h('article', post.body)
+        );
+      } else {
+        return h('h1', 'loading...');
+      }
+    })
+  );
+}
+
+plastiq.append(document.body, render, {});
+```
+
 # api
 
 ```js
