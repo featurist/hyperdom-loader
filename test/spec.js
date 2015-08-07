@@ -35,6 +35,27 @@ describe('loader', function () {
       expect(calls).to.equal(1);
     });
 
+    it('can be reloaded with reset()', function () {
+      var calls = 0;
+
+      function fn(value) {
+        calls++;
+      }
+
+      var l = loader(fn);
+
+      l('value');
+      l('value');
+
+      expect(calls).to.equal(1);
+
+      l.reset();
+      l('value');
+      l('value');
+
+      expect(calls).to.equal(2);
+    });
+
     it('calls the function again if the arguments are different from last time', function () {
       var calls = 0;
 

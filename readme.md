@@ -94,3 +94,11 @@ var loaderFn = loader(fn, [options]);
 * `options.timeout` - `loaderFn` will continue to return the previous value even when new arguments are passed to it, however if the promise returned from `fn` takes more than `timeout` then `loaderFn` will start returning `undefined` again. Default is 140ms. Set this to 0 to return `undefined` as soon as the arguments have changed.
 * `options.onfulfilled` - a function to be called when the promise returned from `fn` is fulfilled. By default refreshes the plastiq view.
 * `options.equality` - Default argument equality is by reference, set this to `json` if you want to compare arguments by comparing the JSON representation of the arguments.
+
+## reset
+
+```js
+loader.reset();
+```
+
+Resets the argument cache, so the next call will call `fn`. Do this after you know the result will be different, i.e. something has changed on the server.

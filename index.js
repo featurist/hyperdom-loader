@@ -66,7 +66,7 @@ module.exports = function(fn, options) {
     }
   }, options);
 
-  return function () {
+  function loader() {
     setPlastiqRefresh();
 
     throttledFn.apply(this, arguments);
@@ -77,13 +77,19 @@ module.exports = function(fn, options) {
       return storedValue;
     }
   };
+
+  loader.reset = throttledFn.reset;
+
+  return loader;
 };
 
 function onlyWithDifferentArguments(fn, options) {
   var lastArguments;
 
+  var throttleFn;
+
   if (options && options.equality == 'json') {
-    return function () {
+    var throttleFn = function () {
       if (!lastArguments || !argumentsEqualJson(lastArguments, arguments)) {
         fn.apply(this, arguments);
 
@@ -94,7 +100,7 @@ function onlyWithDifferentArguments(fn, options) {
       }
     };
   } else {
-    return function () {
+    var throttleFn = function () {
       if (!lastArguments || !argumentsEqual(lastArguments, arguments)) {
         fn.apply(this, arguments);
 
@@ -105,6 +111,12 @@ function onlyWithDifferentArguments(fn, options) {
       }
     };
   }
+
+  throttleFn.reset = function () {
+    lastArguments = undefined;
+  };
+
+  return throttleFn;
 }
 
 function argumentsEqual(args1, args2, equality) {
