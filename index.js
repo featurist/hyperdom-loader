@@ -36,6 +36,10 @@ module.exports = function(fn, options) {
         }, function (error) {
           if (thisCallId == callId) {
             storedException = error;
+
+            if (onfulfilled) {
+              onfulfilled(error);
+            }
           }
           if (resetTimeout) {
             clearTimeout(resetTimeout);

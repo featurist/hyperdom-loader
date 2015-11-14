@@ -242,6 +242,29 @@ describe('loader', function () {
         });
       });
 
+      it('calls onfulfilled when a promise is rejected', function () {
+        var promise;
+        var fulfilled = false;
+
+        function fn(value) {
+          promise = eventualException(value);
+          return promise;
+        }
+
+        var l = loader(fn, {onfulfilled: function (value) {
+          fulfilled = value;
+        }});
+
+        expect(l('error')).to.be.undefined;
+        expect(fulfilled).to.be.false;
+
+        return promise.then(undefined, function () {
+          expect(function () { l('error') }).to.throw('error');
+          expect(fulfilled).to.exist;
+          expect(fulfilled.message).to.equal('error');
+        });
+      });
+
       it('only calls onfulfilled if its the result of the most recent call', function () {
         var promises = [];
         var fulfilled = [];
