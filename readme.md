@@ -94,6 +94,17 @@ var loaderFn = loader(fn, [options]);
 * `options.timeout` - `loaderFn` will continue to return the previous value even when new arguments are passed to it, however if the promise returned from `fn` takes more than `timeout` then `loaderFn` will start returning `undefined` again. Default is 140ms. Set this to 0 to return `undefined` as soon as the arguments have changed.
 * `options.onfulfilled` - a function to be called when the promise returned from `fn` is fulfilled. By default refreshes the plastiq view.
 * `options.equality` - Default argument equality is by reference, set this to `json` if you want to compare arguments by comparing the JSON representation of the arguments.
+* `options.loading` - a function that is called on the previous value while waiting for a new value to be fulfilled. This can be used to return (or throw) the previous value, or some variant to indicate that a new value will soon be available. The default behaviour is to always throw the previous error, or return the previous value if the new value has only been waiting for 140 milliseconds (`options.timeout`):
+
+    ```js
+      function loading(lastValue, loadingSince, isException) {
+        if (isException) {
+          throw lastValue;
+        } else if (loadingSince < timeout) {
+          return lastValue;
+        }
+      }
+    ```
 
 ## reset
 
