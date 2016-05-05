@@ -539,7 +539,7 @@ describe('loader', function () {
         var fn = loader(function (obj) {
           calls++;
           return obj;
-        }, {equality: 'json'});
+        }, {key: 'json'});
 
         fn({a: 1});
         fn({a: 1});
@@ -553,7 +553,7 @@ describe('loader', function () {
         var fn = loader(function (obj) {
           calls++;
           return obj;
-        }, {equality: 'json'});
+        }, {key: 'json'});
 
         var obj = {a: 1};
         fn(obj);
@@ -563,6 +563,45 @@ describe('loader', function () {
         obj.a = 2;
         fn(obj);
         fn(obj);
+        expect(calls).to.equal(2);
+      });
+    });
+
+    describe('key', function () {
+      it('calls the function only once if the arguments produce the same JSON', function () {
+        var calls = 0;
+
+        var fn = loader(function (obj) {
+          calls++;
+          return obj;
+        }, {key: function (a, b) {
+          return [a, b];
+        }});
+
+        fn(1, 2, 3);
+        fn(1, 2, 4);
+
+        expect(calls).to.equal(1);
+      });
+
+      it('calls the function again if the same object has changed', function () {
+        var calls = 0;
+
+        var fn = loader(function (obj) {
+          calls++;
+          return obj;
+        }, {key: function (a, b) {
+          return [a, b];
+        }});
+
+        var obj = {a: 1};
+        fn(1, 2, 3);
+        fn(1, 2, 4);
+        expect(calls).to.equal(1);
+
+        obj.a = 2;
+        fn(2, 2, 3);
+        fn(2, 2, 3);
         expect(calls).to.equal(2);
       });
     });

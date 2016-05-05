@@ -7,7 +7,6 @@ module.exports = function(fn, options) {
   var storedException;
   var callId = 0;
   var previousPromise;
-  var resetTimeout;
   var timeout = options && options.hasOwnProperty('timeout')? options.timeout: 140;
 
   var loading = typeof options == 'object' && options.hasOwnProperty('loading')? options.loading: function (lastValue, loadingSince, isException) {
@@ -97,31 +96,24 @@ module.exports = function(fn, options) {
 function onlyWithDifferentArguments(fn, options) {
   var lastArguments;
 
-  var throttleFn;
+  var throttleFn, keyFn = referenceKey;
 
-  if (options && options.equality == 'json') {
-    var throttleFn = function () {
-      if (!lastArguments || !argumentsEqualJson(lastArguments, arguments)) {
-        fn.apply(this, arguments);
-
-        lastArguments = new Array(arguments.length);
-        for (var n = 0; n < lastArguments.length; n++) {
-          lastArguments[n] = JSON.stringify(arguments[n]);
-        }
-      }
-    };
-  } else {
-    var throttleFn = function () {
-      if (!lastArguments || !argumentsEqual(lastArguments, arguments)) {
-        fn.apply(this, arguments);
-
-        lastArguments = new Array(arguments.length);
-        for (var n = 0; n < lastArguments.length; n++) {
-          lastArguments[n] = arguments[n];
-        }
-      }
-    };
+  if (options) {
+    if (options.key == 'json' || options.equality == 'json') {
+      keyFn = jsonKey;
+    } else if (options.key) {
+      keyFn = options.key;
+    }
   }
+
+  throttleFn = function () {
+    var keyArguments = keyFn.apply(undefined, arguments);
+    if (!lastArguments || !argumentsEqual(lastArguments, keyArguments)) {
+      fn.apply(this, arguments);
+
+      lastArguments = keyArguments;
+    }
+  };
 
   throttleFn.reset = function () {
     lastArguments = undefined;
@@ -130,7 +122,17 @@ function onlyWithDifferentArguments(fn, options) {
   return throttleFn;
 }
 
-function argumentsEqual(args1, args2, equality) {
+function jsonKey() {
+  return Array.prototype.slice.call(arguments).map(function (arg) {
+    return JSON.stringify(arg);
+  });
+}
+
+function referenceKey() {
+  return Array.prototype.slice.call(arguments);
+}
+
+function argumentsEqual(args1, args2) {
   if (args1.length !== args2.length) {
     return false;
   } else {
@@ -143,18 +145,3 @@ function argumentsEqual(args1, args2, equality) {
     return true;
   }
 }
-
-function argumentsEqualJson(args1, args2) {
-  if (args1.length !== args2.length) {
-    return false;
-  } else {
-    for(var n = 0; n < args1.length; n++) {
-      if (args1[n] !== JSON.stringify(args2[n])) {
-        return false;
-      }
-    }
-
-    return true;
-  }
-}
-
