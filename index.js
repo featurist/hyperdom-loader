@@ -17,6 +17,9 @@ module.exports = function(fn, options) {
     }
   };
 
+  if (options && options.onfulfilled === undefined) {
+    var expectRefresh = true;
+  }
   var onfulfilled = options && options.onfulfilled;
 
   function setPlastiqRefresh() {
@@ -30,25 +33,27 @@ module.exports = function(fn, options) {
     try {
       var result = fn.apply(this, arguments)
       storedException = undefined;
-      
+
       if(result && typeof result.then === 'function') {
         result.then(function (value) {
           if (thisCallId == callId) {
             isLoading = false;
             storedValue = value;
 
-            if (onfulfilled) {
-              onfulfilled(value);
+            if (expectRefresh && !onfulfilled) {
+              throw new Error("Don't know how to refresh (loader's been called outside render cycle)")
             }
+            onfulfilled(value);
           }
         }, function (error) {
           if (thisCallId == callId) {
             isLoading = false;
             storedException = error;
 
-            if (onfulfilled) {
-              onfulfilled(error);
+            if (expectRefresh && !onfulfilled) {
+              throw new Error("Don't know how to refresh (loader's been called outside render cycle)")
             }
+            onfulfilled(error);
           }
         });
 
