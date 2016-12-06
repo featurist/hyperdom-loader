@@ -1,7 +1,7 @@
 {
-  "name": "plastiq-loader",
+  "name": "hyperdom-loader",
   "version": "1.4.0",
-  "description": "resource loader for plastiq",
+  "description": "resource loader for hyperdom",
   "main": "index.js",
   "directories": {
     "test": "test"
@@ -10,22 +10,23 @@
     "chai": "3.0.0"
   },
   "devDependencies": {
-    "mocha": "2.2.5"
+    "mocha": "2.2.5",
+    "hyperdom": "0.2.0"
   },
   "scripts": {
     "test": "mocha"
   },
   "keywords": [
-    "plastiq"
+    "hyperdom"
   ],
   "author": "Tim Macfarlane <timmacfarlane@gmail.com>",
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "https://github.com/featurist/plastiq-loader.git"
+    "url": "https://github.com/featurist/hyperdom-loader.git"
   },
   "bugs": {
-    "url": "https://github.com/featurist/plastiq-loader/issues"
+    "url": "https://github.com/featurist/hyperdom-loader/issues"
   },
-  "homepage": "https://github.com/featurist/plastiq-loader"
+  "homepage": "https://github.com/featurist/hyperdom-loader"
 }

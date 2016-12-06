@@ -1,4 +1,4 @@
-var h = require('plastiq').html;
+var h = require('hyperdom').html;
 
 module.exports = function(fn, options) {
   var isLoading;
@@ -19,7 +19,7 @@ module.exports = function(fn, options) {
 
   var onfulfilled = options && options.onfulfilled;
 
-  function setPlastiqRefresh() {
+  function setHyperdomRefresh() {
     if (!onfulfilled && h.currentRender) {
       onfulfilled = h.refresh;
     }
@@ -30,7 +30,7 @@ module.exports = function(fn, options) {
     try {
       var result = fn.apply(this, arguments)
       storedException = undefined;
-      
+
       if(result && typeof result.then === 'function') {
         result.then(function (value) {
           if (thisCallId == callId) {
@@ -69,7 +69,7 @@ module.exports = function(fn, options) {
   }, options);
 
   function loader() {
-    setPlastiqRefresh();
+    setHyperdomRefresh();
 
     throttledFn.apply(this, arguments);
 
